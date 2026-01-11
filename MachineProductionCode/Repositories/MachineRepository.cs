@@ -38,6 +38,19 @@ namespace ProductionMonitoringSystem.Repositories
                 }
             }
         }
+        public int GetMachineMaxOutput(int machineId)
+        {
+            using (var conn = DbConnectionFactory.GetConnection())
+            {
+                using (var cmd = new SqlCommand(
+                    "SELECT TheoreticalMaxOutput FROM Machine WHERE MachineId=@id", conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", machineId);
 
+                    conn.Open();
+                    return (int)cmd.ExecuteScalar();
+                }
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProductionMonitoringSystem.Model
 {
+
     public class ProductionRun
     {
         public int RunId { get; set; }

@@ -27,5 +27,61 @@ namespace ProductionMonitoringSystem.Repositories
                 }
             }
         }
+        public ProductionRun GetRunById(int runId)
+        {
+            using (var conn = DbConnectionFactory.GetConnection())
+            {
+                using (var cmd = new SqlCommand(
+                    "SELECT * FROM ProductionRun WHERE RunId=@id", conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", runId);
+
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                            return null;
+
+                        return new ProductionRun
+                        {
+                            RunId = (int)reader["RunId"],
+                            MachineId = (int)reader["MachineId"],
+                            StartTime = (DateTime)reader["StartTime"],
+                            EndTime = reader["EndTime"] as DateTime?,
+                            PlannedDuration = (int)reader["PlannedDuration"],
+                            ActualUnitsProduced = (int)reader["ActualUnitsProduced"],
+                            DefectiveUnits = (int)reader["DefectiveUnits"],
+                            DowntimeMinutes = (int)reader["DowntimeMinutes"],
+                            RunStatus = reader["RunStatus"].ToString()
+                        };
+                    }
+                }
+            }
+        }
+        public void EndProductionRun(
+    int runId,
+    int actualUnitsProduced,
+    int defectiveUnits)
+        {
+            using (var conn = DbConnectionFactory.GetConnection())
+            {
+                using (var cmd = new SqlCommand(
+                    @"UPDATE ProductionRun
+              SET EndTime = @endTime,
+                  ActualUnitsProduced = @actualUnits,
+                  DefectiveUnits = @defectiveUnits,
+                  RunStatus = 'Completed'
+              WHERE RunId = @runId", conn))
+                {
+                    cmd.Parameters.AddWithValue("@endTime", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@actualUnits", actualUnitsProduced);
+                    cmd.Parameters.AddWithValue("@defectiveUnits", defectiveUnits);
+                    cmd.Parameters.AddWithValue("@runId", runId);
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

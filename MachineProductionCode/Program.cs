@@ -1,19 +1,12 @@
-﻿using System;
-using ProductionMonitoringSystem.Repositories;
+﻿using ProductionMonitoringSystem.UI;
 
 namespace ProductionMonitoringSystem
 {
-    public class Program
+    class Program
     {
         static void Main(string[] args)
         {
-            var repo = new MachineRepository();
-            var machine = repo.GetMachineById(1);
-
-            if (machine == null)
-                Console.WriteLine("Machine not found");
-            else
-                Console.WriteLine(machine.MachineName);
+            new ConsoleMenu().Start();
         }
     }
 }
